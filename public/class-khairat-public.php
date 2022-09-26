@@ -74,6 +74,8 @@ class Khairat_Public {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/khairat-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name.'bootstrap' , plugin_dir_url( __FILE__ ) . 'css/bootstrap.min.css', array(), $this->version, 'all' );
+
 		$files = glob(KHAI_PATH . '/myapp/dist/assets/*.css');
 		
 		foreach ($files AS $key => $val){
@@ -104,6 +106,7 @@ class Khairat_Public {
 
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/khairat-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name.'bootstrap', plugin_dir_url( __FILE__ ) . 'js/bootstrap.bundle.min.js', array( 'jquery' ), $this->version, false );
 		$files = glob(KHAI_PATH . '/myapp/dist/assets/*.js');
 		
 		foreach ($files AS $key => $val){

@@ -57,19 +57,22 @@ $stage_daftar = get_user_meta( get_current_user_id(), 'stage_daftar', true ) ;
 
 
 
-
+//http://khairat.test/wp-json/khai_check_login_user/v1/data
 add_action( 'rest_api_init', 'khai_check_login_user' );
 function khai_check_login_user() {
 
-     $GLOBALS['khai_user_id'] = wp_get_current_user(); //<- add this
+    //  $GLOBALS['khai_user_id'] = wp_get_current_user(); //<- production
+	 $GLOBALS['khai_user_id'] =  get_user_by( 'id', 3 ); // development
 
-
-    register_rest_route( 'khai_check_login_user/v1', 'data/(?P<id>\d+)', array(
+	
+	
+    register_rest_route( 'khai_check_login_user/v1', 'data', array(
         'methods' => 'GET',
-        'callback' => 'khai_check_login_user_callback'
+        'callback' => 'khai_check_login_user_callback',
     ) );
 }
 function khai_check_login_user_callback( $request ) {
+
     return  $GLOBALS['khai_user_id']; 
 }
 
