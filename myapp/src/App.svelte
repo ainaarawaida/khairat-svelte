@@ -89,7 +89,7 @@
   };
 
   const submitkariah = (e) => {
-    allapidata.kariah[0] = e.detail;
+    allapidata.kariah = [e.detail];
 
     console.log("allapidata.kariah", allapidata.kariah);
   };
@@ -111,7 +111,7 @@
     <main>
       {#if activeItem === "Daftarkariahview"}
         <Daftarkariahview
-          fieldkariah={allapidata.kariah}
+          fieldkariah={(allapidata.kariah === undefined) ? [] : allapidata.kariah}
           on:submitkariah={submitkariah}
         />
       {:else if activeItem === "Dashboardview"}

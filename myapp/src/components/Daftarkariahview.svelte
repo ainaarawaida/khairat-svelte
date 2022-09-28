@@ -66,10 +66,13 @@
 
   onMount(async () => {
     console.log("fieldkariah[0]", fieldkariah);
-    fields.kariah_name = fieldkariah[0].post_title;
-    fields.alamat_kariah = fieldkariah[0].alamat_kariah;
-    fields.site_page_url = fieldkariah[0].post_name;
-    temp_site_page_url = fieldkariah[0].post_name;
+    if(fieldkariah[0] !== undefined){
+      fields.kariah_name = fieldkariah[0].post_title;
+      fields.alamat_kariah = fieldkariah[0].alamat_kariah;
+      fields.site_page_url = fieldkariah[0].post_name;
+      temp_site_page_url = fieldkariah[0].post_name;
+    }
+   
   });
 
   $: console.log("errors.all", errors.all.length);

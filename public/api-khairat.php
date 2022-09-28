@@ -7,7 +7,7 @@ function khai_check_user(){
     global $wpdb ; 
 
 	// $GLOBALS['khai_temp_data']['user_id'] = wp_get_current_user(); //<- production
-    $GLOBALS['khai_temp_data']['user_id'] =  get_user_by( 'id', 3 ); // development
+    $GLOBALS['khai_temp_data']['user_id'] =  get_user_by( 'id', 22 ); // development
 
 	$GLOBALS['khai_temp_data']['stage_daftar'] = get_user_meta( $GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', true ) ;
 	$GLOBALS['khai_temp_data']['logout_url'] = wp_logout_url( get_permalink() ); //<- production
@@ -19,9 +19,12 @@ function khai_check_user(){
             $wpdb->prepare("SELECT ID,post_name,post_title FROM {$wpdb->prefix}posts WHERE post_type =%s AND post_author = %d", array('khai_page_name', $GLOBALS['khai_temp_data']['user_id']->ID)) 
         );
 
-        $GLOBALS['khai_temp_data']['kariah'] = $check_author_site_name ;
-        $GLOBALS['khai_temp_data']['kariah'][0]->alamat_kariah = get_post_meta(  $check_author_site_name[0]->ID, 'alamat_kariah', true ) ;
-       
+        if($check_author_site_name){
+            $GLOBALS['khai_temp_data']['kariah'] = $check_author_site_name ;
+            $GLOBALS['khai_temp_data']['kariah'][0]->alamat_kariah = get_post_meta(  $check_author_site_name[0]->ID, 'alamat_kariah', true ) ;
+          
+        }
+        
     }
    
     if($_POST['action'] && $_POST['action'] === 'daftarkariah'){
@@ -53,7 +56,9 @@ function khai_check_user(){
 
             if(!$check_author_site_name && !$check_exist_post_title && !$check_exist_site_name){
                 $condition = 'data0nama0url0';
-                 $my_post['ID'] =  wp_insert_post( $my_post );
+                $my_post['ID'] =  wp_insert_post( $my_post );
+                update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
+                update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
             }
             if(!$check_author_site_name && !$check_exist_post_title && $check_exist_site_name){
                  $condition = 'data0nama0url1';
@@ -73,6 +78,8 @@ function khai_check_user(){
                 $my_post['ID'] = $check_author_site_name[0]->ID;
                
                 wp_update_post( $my_post );
+                update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
+                update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
             }
              if($check_author_site_name && !$check_exist_post_title && $check_exist_site_name){
                  $condition = 'data1nama0url1';
@@ -80,6 +87,8 @@ function khai_check_user(){
                 if($check_author_site_name[0]->post_name ===  str_replace(' ', '-', strtolower($_POST['site_page_url']))){
                     
                     wp_update_post( $my_post );
+                    update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
+                    update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
                 }else{
                     $GLOBALS['khai_temp_data']['submitpost']['error'][] = 'Site URL telah wujud' ; 
                 }
@@ -91,6 +100,8 @@ function khai_check_user(){
                    if($check_author_site_name[0]->post_title ===  wp_strip_all_tags( $_POST['kariah_name'] ) ){
                       
                         wp_update_post( $my_post );
+                        update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
+                        update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
                     }else{
                         $GLOBALS['khai_temp_data']['submitpost']['error'][] = 'Nama Kariah telah wujud' ; 
                     }
@@ -103,6 +114,8 @@ function khai_check_user(){
                     if($check_author_site_name[0]->post_title ===  wp_strip_all_tags( $_POST['kariah_name'] ) ){
                         
                         wp_update_post( $my_post );
+                        update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
+                        update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
                     }else{
                         $GLOBALS['khai_temp_data']['submitpost']['error'][] = 'Nama Kariah telah wujud' ; 
                     }

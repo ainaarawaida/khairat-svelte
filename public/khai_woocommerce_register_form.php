@@ -30,12 +30,13 @@ $select_kariah = $wpdb->get_results(
 </p>
 
 <!-- Styles -->
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" >
 <link rel="stylesheet" href="<?php echo KHAI_URL. '/public/css/select2.min.css' ; ?>" />
 <link rel="stylesheet" href="<?php echo KHAI_URL. '/public/css/select2-bootstrap-5-theme.min.css' ; ?>" />
 
 
 <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo KHAI_URL. '/public/js/jquery.slim.min.js' ; ?>"></script>
 <script src="<?php echo KHAI_URL. '/public/js/select2.min.js' ; ?>"></script>
 
@@ -43,6 +44,14 @@ $select_kariah = $wpdb->get_results(
 
 
 document.addEventListener("DOMContentLoaded", function(){
+
+            let ele2 = document.querySelectorAll("input.woocommerce-Input") ;
+            // console.log(ele);
+            for(let i = 0 ; i < ele2.length ; i++){
+                ele2[i].classList.add('form-control');
+            }
+
+
             let ele = document.querySelector("#type_reg") ;
           
             if(ele.value == 'ahli'){
