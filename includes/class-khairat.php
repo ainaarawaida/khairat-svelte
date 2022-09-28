@@ -179,6 +179,9 @@ class Khairat {
 		//woo register
 		$this->loader->add_action( 'woocommerce_register_form', $plugin_public, 'khai_woocommerce_register_form' );
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_public, 'khai_woocommerce_created_customer', 10, 3 );
+
+		//logout redirect
+		$this->loader->add_action('check_admin_referer', $plugin_public, 'khai_check_admin_referer', 10, 2);
 	}
 
 	/**
