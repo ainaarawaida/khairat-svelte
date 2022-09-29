@@ -1,11 +1,44 @@
 <script>
+  import { createEventDispatcher } from "svelte";
+  let dispatch = createEventDispatcher();
 </script>
 
 <div class="container-fluid px-4">
-  <h1 class="mt-4">Senaraiahliview</h1>
+  <h3 class="mt-4">Senarai Ahli</h3>
   <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Dashboard</li>
+    <li class="breadcrumb-item active">Senarai Ahli</li>
   </ol>
+
+  <div class="row alert alert-warning alert-dismissable">
+    <div class="col">
+      Semua ahli yang berdaftar dan telah diluluskan akan dipaparkan dibahagian
+      ini. Pentadbir perlu klik edit untuk melihat perincian ahli, bayaran,
+      tanggungan dan faedah khairat yang diterima.
+    </div>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    />
+  </div>
+
+  <div class="row ">
+    <div class="col text-end">
+      <button
+        on:click={() => dispatch("tabChange", "Daftarahliview")}
+        class="btn btn-primary"
+        href="https://www.e-khairat.com/demo_v3/addNew"
+        ><i class="fa fa-plus" /> Daftar Ahli</button
+      >
+      <button
+        class="btn btn-danger"
+        href="https://www.e-khairat.com/demo_v3/inActive"
+        >Senarai Ahli Tidak Aktif</button
+      >
+    </div>
+  </div>
+  <br />
   <div class="row">
     <div class="col-xl-3 col-md-6">
       <div class="card bg-primary text-white mb-4">

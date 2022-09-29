@@ -1,5 +1,7 @@
 <script>
   export let logout_url;
+  import { createEventDispatcher } from "svelte";
+  let dispatch = createEventDispatcher();
 </script>
 
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -43,7 +45,9 @@
         class="dropdown-menu dropdown-menu-end"
         aria-labelledby="navbarDropdown"
       >
-        <li><a class="dropdown-item" href="#!">Settings</a></li>
+        <li role="button" on:click={() => dispatch("tabChange", "Profilview")}>
+          <span class="dropdown-item" href="#!">Profil</span>
+        </li>
         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
         <li><hr class="dropdown-divider" /></li>
         <li>

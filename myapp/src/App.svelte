@@ -13,6 +13,9 @@
   import Infosistemview from "./components/Infosistemview.svelte";
   import Tetapanzonview from "./components/Tetapanzonview.svelte";
   import Pengumumanview from "./components/Pengumumanview.svelte";
+  import Profilview from "./components/Profilview.svelte";
+  import Daftarahliview from "./components/Daftarahliview.svelte";
+
   // import Jenisyuranview from "./components/Jenisyuranview.svelte";
   // import Kadaryuranview from "./components/Kadaryuranview.svelte";
 
@@ -27,27 +30,27 @@
   let activeItem = "";
   let stage_daftar;
 
-  let apidata_testing = new Promise(function (myResolve, myReject) {
-    let url = `${mybaseurl}/wp-json/khai_api/v1/data`;
+  // let apidata_testing = new Promise(function (myResolve, myReject) {
+  //   let url = `${mybaseurl}/wp-json/khai_api/v1/data`;
 
-    fetch(url, {
-      // Adding method type
-      method: "GET",
-      // Adding body or contents to send
-    })
-      // Converting to JSON
-      .then((response) => response.json())
+  //   fetch(url, {
+  //     // Adding method type
+  //     method: "GET",
+  //     // Adding body or contents to send
+  //   })
+  //     // Converting to JSON
+  //     .then((response) => response.json())
 
-      // Displaying results to console
-      .then((result) => {
-        myResolve(JSON.stringify(result));
-        // logout_url = result["logout_url"];
-        // detailuser = result["user_id"];
-        // console.log("xx", result);
-        // console.log("xx", result.length);
-      })
-      .catch((error) => console.log("error", error));
-  });
+  //     // Displaying results to console
+  //     .then((result) => {
+  //       myResolve(JSON.stringify(result));
+  //       // logout_url = result["logout_url"];
+  //       // detailuser = result["user_id"];
+  //       // console.log("xx", result);
+  //       // console.log("xx", result.length);
+  //     })
+  //     .catch((error) => console.log("error", error));
+  // });
 
   let apidata = new Promise(function (myResolve, myReject) {
     let url = `${mybaseurl}/wp-json/api/v1/data`;
@@ -75,7 +78,7 @@
     detailuser = JSON.parse(await apidata).user_id.data.display_name;
     logout_url = JSON.parse(await apidata)["logout_url"];
     stage_daftar = JSON.parse(await apidata).stage_daftar;
-    console.log("allapidata.stage_daftar", allapidata.stage_daftar);
+    // console.log("allapidata.stage_daftar", allapidata.stage_daftar);
     if (allapidata.stage_daftar == 0) {
       activeItem = "Daftarkariahview";
     }
@@ -91,13 +94,17 @@
   const submitkariah = (e) => {
     allapidata.kariah = [e.detail];
 
-    console.log("allapidata.kariah", allapidata.kariah);
+    // console.log("allapidata.kariah", allapidata.kariah);
+  };
+
+  const submitprofil = (e) => {
+    allapidata.user_id.data = e.detail;
   };
 
   $: console.log("all api data", allapidata);
 </script>
 
-<Navbarmenu {logout_url} />
+<Navbarmenu {logout_url} on:tabChange={tabChange} />
 
 <div id="layoutSidenav">
   <LayoutSidenav
@@ -111,13 +118,15 @@
     <main>
       {#if activeItem === "Daftarkariahview"}
         <Daftarkariahview
-          fieldkariah={(allapidata.kariah === undefined) ? [] : allapidata.kariah}
+          fieldkariah={allapidata.kariah === undefined ? [] : allapidata.kariah}
           on:submitkariah={submitkariah}
         />
       {:else if activeItem === "Dashboardview"}
         <Dashboardview />
       {:else if activeItem === "Senaraiahliview"}
-        <Senaraiahliview />
+        <Senaraiahliview on:tabChange={tabChange} />
+      {:else if activeItem === "Daftarahliview"}
+        <Daftarahliview fields={allapidata.kariah} />
       {:else if activeItem === "Senaraitanggunganview"}
         <Senaraitanggunganview />
       {:else if activeItem === "Penerimakhairatview"}
@@ -136,6 +145,11 @@
         <Jenisyuranview />
       {:else if activeItem === "Kadaryuranview"}
         <Kadaryuranview />
+      {:else if activeItem === "Profilview"}
+        <Profilview
+          fields={allapidata.user_id.data}
+          on:submitprofil={submitprofil}
+        />
       {:else}{/if}
     </main>
     <footer class="py-4 bg-light mt-auto">

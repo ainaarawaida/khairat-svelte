@@ -5,7 +5,7 @@
   export let activeItem;
   export let stage_daftar;
 
-  $: console.log("stage_daftar", stage_daftar);
+  // $: console.log("stage_daftar", stage_daftar);
 </script>
 
 <div id="layoutSidenav_nav">

@@ -7,7 +7,18 @@ function khai_check_user(){
     global $wpdb ; 
 
 	// $GLOBALS['khai_temp_data']['user_id'] = wp_get_current_user(); //<- production
-    $GLOBALS['khai_temp_data']['user_id'] =  get_user_by( 'id', 22 ); // development
+    $GLOBALS['khai_temp_data']['user_id'] =  get_user_by( 'id', 3 ); // development
+
+     if (array_key_exists("pentadbir", $GLOBALS['khai_temp_data']['user_id']->caps)){
+        $jenisahli = 1 ; 
+     }else  if (array_key_exists("ahli", $GLOBALS['khai_temp_data']['user_id']->caps)){
+        $jenisahli = 2 ; 
+     }else{
+         $jenisahli = 0 ; 
+     }
+    $GLOBALS['khai_temp_data']['user_id']->data->jenis_ahli = $jenisahli ;
+    
+  
 
 	$GLOBALS['khai_temp_data']['stage_daftar'] = get_user_meta( $GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', true ) ;
 	$GLOBALS['khai_temp_data']['logout_url'] = wp_logout_url( get_permalink() ); //<- production
@@ -22,7 +33,7 @@ function khai_check_user(){
         if($check_author_site_name){
             $GLOBALS['khai_temp_data']['kariah'] = $check_author_site_name ;
             $GLOBALS['khai_temp_data']['kariah'][0]->alamat_kariah = get_post_meta(  $check_author_site_name[0]->ID, 'alamat_kariah', true ) ;
-          
+            $GLOBALS['khai_temp_data']['user_id']->data->kariah_name = $check_author_site_name[0]->post_title ;
         }
         
     }
@@ -134,8 +145,82 @@ function khai_check_user(){
            
             
     }
-   
 
+    if($_POST['action'] && $_POST['action'] === 'updateProfil'){
+        $GLOBALS['khai_temp_data']['submitpost'] = array(); 
+        $GLOBALS['khai_temp_data']['submitpost']['error'] = array() ; 
+
+        $args = array(
+            'ID'         => $GLOBALS['khai_temp_data']['user_id']->ID,
+            'user_email' => esc_attr( $_POST['user_email'] ),
+            'display_name' => esc_attr( $_POST['display_name'] ),
+        );
+        $check = wp_update_user( $args );
+       
+      
+        if(!$check->errors){
+            if($_POST['user_pass'] != ''){
+                wp_set_password( $_POST['user_pass'], $GLOBALS['khai_temp_data']['user_id']->ID );
+            }
+
+            update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'icno', $_POST['icno']) ; 
+            update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'telno', $_POST['telno']) ; 
+          
+            $GLOBALS['khai_temp_data']['user_id']->data->user_email = esc_attr( $_POST['user_email'] ) ; 
+            $GLOBALS['khai_temp_data']['user_id']->data->display_name = esc_attr( $_POST['display_name'] ) ; 
+            $GLOBALS['khai_temp_data']['user_id']->data->icno = esc_attr( $_POST['icno'] ) ; 
+            $GLOBALS['khai_temp_data']['user_id']->data->telno = esc_attr( $_POST['telno'] ) ; 
+        }else{
+            $GLOBALS['khai_temp_data']['submitpost']['error'][] = array( "key" => "user_email", "text"=> "Email ini telah digunakan") ; 
+        }
+       
+
+
+    }
+
+    if($_POST['action'] && $_POST['action'] === 'pendaftaranAhli'){
+        $GLOBALS['khai_temp_data']['submitpost'] = array(); 
+        $GLOBALS['khai_temp_data']['submitpost']['error'] = array() ; 
+       
+
+        if($_POST['user_pass'] === ""){
+             $random_password = wp_generate_password( 12, false );
+              $check = wp_create_user( $_POST['user_email'] , $random_password, $_POST['user_email'] );
+               if(!$check->errors){
+                wp_new_user_notification( $check, $random_password);
+               }
+              
+        }else{
+            $check = wp_create_user( $_POST['user_email'] , $_POST['user_pass'], $_POST['user_email'] );
+        }
+
+        if(!$check->errors){
+            update_user_meta($check, 'icno', $_POST['icno']) ; 
+            update_user_meta($check, 'telno', $_POST['telno']) ; 
+            update_user_meta( $check, 'wp_capabilities', array('ahli' => 1) );
+			update_user_meta( $check, 'stage_daftar', 1 );
+			update_user_meta( $check, 'select_kariah', $_POST['kariah_name'] );
+            
+        }else{
+            $GLOBALS['khai_temp_data']['submitpost']['error'][] = array( "key" => "user_email", "text"=> "Emel ini telah digunakan") ; 
+        }
+       
+        
+
+        deb( 'ddd');exit();
+
+        exit();
+
+
+       
+
+
+    }
+
+
+    
+   
+    // deb($GLOBALS['khai_temp_data']);exit();
 
      register_rest_route( 'api/v1', '/data', array(
             'methods' => 'POST',
@@ -158,8 +243,8 @@ function khai_rest_api_init() {
 
    
 	//  $GLOBALS['khai_temp_data']['user_id'] =  get_user_by( 'id', 1 ); // development
-		$GLOBALS['khai_temp_data']['user_id'] = wp_get_current_user(); //<- production
-		$GLOBALS['khai_temp_data']['logout_url'] = wp_logout_url( get_permalink() ); //<- production
+		// $GLOBALS['khai_temp_data']['user_id'] = wp_get_current_user(); //<- production
+		// $GLOBALS['khai_temp_data']['logout_url'] = wp_logout_url( get_permalink() ); //<- production
 	
 	
     register_rest_route( 'khai_api/v1', 'data', array(

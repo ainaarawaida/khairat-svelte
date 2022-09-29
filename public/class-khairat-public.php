@@ -153,7 +153,7 @@ class Khairat_Public {
 		if($_POST['type_reg'] === 'ahli'){
 			$updated = update_user_meta( $customer_id, 'wp_capabilities', array('ahli' => 1) );
 			$updated = update_user_meta( $customer_id, 'stage_daftar', 0 );
-			$updated = update_user_meta( $customer_id, 'select_kariah', $_POST['select_kariah'] );
+			$updated = update_user_meta( $customer_id, 'kariah_name', $_POST['select_kariah'] );
 		}
 
 	}
