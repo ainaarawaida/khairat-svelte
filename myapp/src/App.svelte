@@ -126,7 +126,7 @@
       {:else if activeItem === "Senaraiahliview"}
         <Senaraiahliview on:tabChange={tabChange} />
       {:else if activeItem === "Daftarahliview"}
-        <Daftarahliview fields={allapidata.kariah} />
+        <Daftarahliview fields={allapidata.kariah} on:tabChange={tabChange} />
       {:else if activeItem === "Senaraitanggunganview"}
         <Senaraitanggunganview />
       {:else if activeItem === "Penerimakhairatview"}

@@ -2,9 +2,9 @@
   import { onMount } from "svelte";
 
   onMount(async () => {
-    const datatablesSimple = document.getElementById("datatablesSimple");
-    if (datatablesSimple) {
-      new simpleDatatables.DataTable(datatablesSimple);
+    const datatablesSimple2 = document.getElementById("datatablesSimple2");
+    if (datatablesSimple2) {
+      new simpleDatatables.DataTable(datatablesSimple2);
     }
   });
 </script>
@@ -140,7 +140,7 @@
       Pendaftaran Online
     </div>
     <div class="card-body">
-      <table id="datatablesSimple">
+      <table id="datatablesSimple2">
         <thead>
           <tr>
             <th>Name</th>

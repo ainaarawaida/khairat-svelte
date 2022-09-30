@@ -197,25 +197,56 @@ function khai_check_user(){
         if(!$check->errors){
             update_user_meta($check, 'icno', $_POST['icno']) ; 
             update_user_meta($check, 'telno', $_POST['telno']) ; 
-            update_user_meta( $check, 'wp_capabilities', array('ahli' => 1) );
+            if($_POST['jenis_ahli'] == '1'){
+                update_user_meta( $check, 'wp_capabilities', array('pentadbir' => 1) );
+            }else if($_POST['jenis_ahli'] == '2'){
+                update_user_meta( $check, 'wp_capabilities', array('ahli' => 2) );
+            }else if($_POST['jenis_ahli'] == '3'){
+                update_user_meta( $check, 'wp_capabilities', array('asnaf' => 3) );
+            }
+           
 			update_user_meta( $check, 'stage_daftar', 1 );
-			update_user_meta( $check, 'select_kariah', $_POST['kariah_name'] );
+			update_user_meta( $check, 'kariah_name', $_POST['kariah_name'] );
             
         }else{
             $GLOBALS['khai_temp_data']['submitpost']['error'][] = array( "key" => "user_email", "text"=> "Emel ini telah digunakan") ; 
         }
        
-        
-
-        deb( 'ddd');exit();
-
-        exit();
-
-
-       
-
 
     }
+
+     if($_POST['action'] && $_POST['action'] === 'Senaraiahliview'){
+          $get_senarai_ahli = $wpdb->get_results( 
+                $wpdb->prepare("
+                SELECT a.ID, a.user_registered, a.user_email, a.display_name, 
+                b.meta_value as kariah_name,
+                c.meta_value as icno,
+                d.meta_value as telno,
+                e.meta_value as status
+                
+                FROM {$wpdb->prefix}users a 
+                LEFT JOIN {$wpdb->prefix}usermeta b 
+                ON a.ID = b.user_id
+                LEFT JOIN {$wpdb->prefix}usermeta c 
+                ON a.ID = c.user_id
+                LEFT JOIN {$wpdb->prefix}usermeta d 
+                ON a.ID = d.user_id
+                LEFT JOIN {$wpdb->prefix}usermeta e 
+                ON a.ID = e.user_id
+
+                WHERE b.meta_key = 'kariah_name'
+                AND c.meta_key = 'icno'
+                AND d.meta_key = 'telno'
+                AND e.meta_key = 'stage_daftar'
+                AND b.meta_value = '{$GLOBALS['khai_temp_data']['user_id']->data->kariah_name}'
+                ") 
+            );
+
+          
+
+            $GLOBALS['khai_temp_data']['submitpost'] = $get_senarai_ahli ;
+     }
+    
 
 
     

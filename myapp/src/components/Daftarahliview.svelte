@@ -51,6 +51,8 @@
       dataArray.append("user_pass", fields.kata_laluan);
       dataArray.append("icno", fields.icno);
       dataArray.append("telno", fields.telno);
+      dataArray.append("jenis_ahli", fields.jenis_ahli);
+      dataArray.append("kariah_name", fields.kariah_name);
 
       let apidata = new Promise(function (myResolve, myReject) {
         fetch(url, {
@@ -91,7 +93,10 @@
 
   onMount(async () => {
     console.log("field", fields);
-    // console.log("field", fields.user_registered);
+    fields.display_name = "";
+    fields.user_email = "";
+    fields.icno = "";
+    fields.telno = "";
     let year = new Date().toISOString().substring(0, 4);
     let month = new Date().toISOString().substring(5, 7);
     let day = new Date().toISOString().substring(8, 10);
@@ -135,6 +140,13 @@
       <div class="alert alert-info alert-dismissible fade show" role="alert">
         <strong>Successul Update</strong>
         <button
+          on:click={() => dispatch("tabChange", "Senaraiahliview")}
+          class="btn btn-primary"
+          href="https://www.e-khairat.com/demo_v3/addNew"
+          >Lihat Senarai Ahli</button
+        >
+
+        <button
           type="button"
           class="btn-close"
           data-bs-dismiss="alert"
@@ -156,8 +168,8 @@
       >
       <input
         type="text"
-        class="woocommerce-Input woocommerce-Input--text input-text form-control {errors.includes(
-          'Nama Kariah telah wujud'
+        class="woocommerce-Input woocommerce-Input--text input-text form-control {errors.some(
+          (d) => d.key.includes('display_name')
         )
           ? 'is-invalid'
           : ''}"
@@ -175,8 +187,8 @@
       <label for="user_email">Emel <span class="required">*</span></label>
       <input
         type="email"
-        class="woocommerce-Input woocommerce-Input--text input-text form-control {errors.includes(
-          'Nama Kariah telah wujud'
+        class="woocommerce-Input woocommerce-Input--text input-text form-control {errors.some(
+          (d) => d.key.includes('user_email')
         )
           ? 'is-invalid'
           : ''}"
@@ -288,7 +300,9 @@
           class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide"
         >
           <label for="user_registered"
-            >Tarikh Daftar<span class="required">*</span>
+            >Tarikh Daftar {fields.user_registered_x}<span class="required"
+              >*</span
+            >
           </label>
           <input
             readonly
