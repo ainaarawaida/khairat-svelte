@@ -15,6 +15,9 @@
   import Pengumumanview from "./components/Pengumumanview.svelte";
   import Profilview from "./components/Profilview.svelte";
   import Daftarahliview from "./components/Daftarahliview.svelte";
+  import EditSenaraiahliview from "./components/EditSenaraiahliview.svelte";
+  import KemaskiniTanggunganview from "./components/KemaskiniTanggunganview.svelte";
+  
 
   // import Jenisyuranview from "./components/Jenisyuranview.svelte";
   // import Kadaryuranview from "./components/Kadaryuranview.svelte";
@@ -29,6 +32,8 @@
   let allapidata;
   let activeItem = "";
   let stage_daftar;
+  let fields ;
+
 
   // let apidata_testing = new Promise(function (myResolve, myReject) {
   //   let url = `${mybaseurl}/wp-json/khai_api/v1/data`;
@@ -87,12 +92,22 @@
     }
   })();
 
-  const tabChange = (e) => {
-    activeItem = e.detail;
+  const tabChange = (e, data) => {
+   
+    if(Array.isArray(e.detail) === true){
+      // console.log('tabChange',   e.detail[1]);
+      fields = {passdata: e.detail[1]} ; 
+      activeItem = e.detail[0];
+    }else{
+      activeItem = e.detail;
+    }
+    
   };
 
   const submitkariah = (e) => {
     allapidata.kariah = [e.detail];
+    allapidata.user_id.data.kariah_name = e.detail.kariah_name ;
+    
 
     // console.log("allapidata.kariah", allapidata.kariah);
   };
@@ -101,7 +116,7 @@
     allapidata.user_id.data = e.detail;
   };
 
-  $: console.log("all api data", allapidata);
+  // $: console.log("all api data", allapidata);
 </script>
 
 <Navbarmenu {logout_url} on:tabChange={tabChange} />
@@ -125,8 +140,12 @@
         <Dashboardview />
       {:else if activeItem === "Senaraiahliview"}
         <Senaraiahliview on:tabChange={tabChange} />
+      {:else if activeItem === "EditSenaraiahliview"}
+        <EditSenaraiahliview {fields} on:tabChange={tabChange} />
       {:else if activeItem === "Daftarahliview"}
         <Daftarahliview fields={allapidata.kariah} on:tabChange={tabChange} />
+      {:else if activeItem === "KemaskiniTanggunganview"}
+        <KemaskiniTanggunganview {fields} on:tabChange={tabChange} />
       {:else if activeItem === "Senaraitanggunganview"}
         <Senaraitanggunganview />
       {:else if activeItem === "Penerimakhairatview"}
@@ -150,7 +169,9 @@
           fields={allapidata.user_id.data}
           on:submitprofil={submitprofil}
         />
-      {:else}{/if}
+      {:else}
+      <div class="d-flex justify-content-center"> <img class="" src="/assets/img/loading.gif" alt=""></div>
+     {/if}
     </main>
     <footer class="py-4 bg-light mt-auto">
       <div class="container-fluid px-4">

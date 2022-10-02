@@ -91,6 +91,7 @@ function khai_check_user(){
                 wp_update_post( $my_post );
                 update_post_meta($my_post['ID'], 'alamat_kariah', $_POST['alamat_kariah']) ; 
                 update_user_meta($GLOBALS['khai_temp_data']['user_id']->ID, 'stage_daftar', 1) ; 
+                update_user_meta($GLOBALS['khai_temp_data']['user_id']->kariah_name, 'kariah_name', $_POST['kariah_name']) ; 
             }
              if($check_author_site_name && !$check_exist_post_title && $check_exist_site_name){
                  $condition = 'data1nama0url1';
@@ -207,6 +208,14 @@ function khai_check_user(){
            
 			update_user_meta( $check, 'stage_daftar', 1 );
 			update_user_meta( $check, 'kariah_name', $_POST['kariah_name'] );
+
+            $userdata = array(
+                'ID' => $check,
+                'display_name' => $_POST['display_name'],
+            );
+            wp_update_user( $userdata );
+
+         
             
         }else{
             $GLOBALS['khai_temp_data']['submitpost']['error'][] = array( "key" => "user_email", "text"=> "Emel ini telah digunakan") ; 
@@ -218,11 +227,23 @@ function khai_check_user(){
      if($_POST['action'] && $_POST['action'] === 'Senaraiahliview'){
           $get_senarai_ahli = $wpdb->get_results( 
                 $wpdb->prepare("
-                SELECT a.ID, a.user_registered, a.user_email, a.display_name, 
+                SELECT 
+                a.ID, 
+                a.ID as no_ahli, 
+                a.display_name,
+                c.meta_value as icno, 
                 b.meta_value as kariah_name,
-                c.meta_value as icno,
                 d.meta_value as telno,
-                e.meta_value as status
+                e.meta_value as status,
+                a.user_registered, 
+                a.user_email,
+                f.meta_value as jenis_ahli,
+                g.meta_value as alamat_ahli,
+                h.meta_value as tanggungan
+               
+                
+               
+               
                 
                 FROM {$wpdb->prefix}users a 
                 LEFT JOIN {$wpdb->prefix}usermeta b 
@@ -233,19 +254,98 @@ function khai_check_user(){
                 ON a.ID = d.user_id
                 LEFT JOIN {$wpdb->prefix}usermeta e 
                 ON a.ID = e.user_id
+                LEFT JOIN {$wpdb->prefix}usermeta f 
+                ON a.ID = f.user_id
+                LEFT JOIN 
+                (SELECT user_id, meta_value FROM {$wpdb->prefix}usermeta WHERE meta_key = 'alamat_ahli' ) g 
+                ON a.ID = g.user_id
+                LEFT JOIN 
+                (SELECT user_id, meta_value FROM {$wpdb->prefix}usermeta WHERE meta_key = 'tanggungan' ) h 
+                ON a.ID = h.user_id
 
                 WHERE b.meta_key = 'kariah_name'
                 AND c.meta_key = 'icno'
                 AND d.meta_key = 'telno'
                 AND e.meta_key = 'stage_daftar'
+                AND f.meta_key = 'wp_capabilities'
                 AND b.meta_value = '{$GLOBALS['khai_temp_data']['user_id']->data->kariah_name}'
                 ") 
             );
 
           
-
+           
+            foreach($get_senarai_ahli AS $key => $val){
+                $get_senarai_ahli[$key]->tanggungan = unserialize($val->tanggungan) ;
+            }
             $GLOBALS['khai_temp_data']['submitpost'] = $get_senarai_ahli ;
      }
+
+
+     if($_POST['action'] && $_POST['action'] === 'EditSenaraiahliview'){
+        $GLOBALS['khai_temp_data']['submitpost'] = array(); 
+        $GLOBALS['khai_temp_data']['submitpost']['error'] = array() ; 
+
+        // $changedateuser_registered = substr($_POST['user_registered'],6,4)."-".substr($_POST['user_registered'],0,2)."-".substr($_POST['user_registered'],3,2);
+        // deb($_POST['user_registered']);exit();
+        $args = array(
+            'ID'         => $_POST['ID'],
+            'user_email' => esc_attr( $_POST['user_email'] ),
+            'display_name' => esc_attr( $_POST['display_name'] ),
+            'user_registered' => esc_attr( $_POST['user_registered'] ),
+        );
+        $check = wp_update_user( $args );
+       
+      
+        if(!$check->errors){
+            if($_POST['user_pass'] != ''){
+                wp_set_password( $_POST['user_pass'], $_POST['ID'] );
+            }
+
+            update_user_meta($_POST['ID'], 'icno', $_POST['icno']) ; 
+            update_user_meta($_POST['ID'], 'telno', $_POST['telno']) ; 
+            update_user_meta($_POST['ID'], 'stage_daftar', $_POST['stage_daftar']) ; 
+            update_user_meta($_POST['ID'], 'alamat_ahli', $_POST['alamat_ahli']) ; 
+
+            if($_POST['jenis_ahli'] == '1'){
+                update_user_meta( $check, 'wp_capabilities', array('pentadbir' => 1) );
+            }else if($_POST['jenis_ahli'] == '2'){
+                update_user_meta( $check, 'wp_capabilities', array('ahli' => 2) );
+            }else if($_POST['jenis_ahli'] == '3'){
+                update_user_meta( $check, 'wp_capabilities', array('asnaf' => 3) );
+            }
+        }else{
+            $GLOBALS['khai_temp_data']['submitpost']['error'][] = array( "key" => "user_email", "text"=> "Email ini telah digunakan") ; 
+        }
+       
+
+      
+
+     }
+
+
+
+
+     if($_POST['action'] && $_POST['action'] === 'EditSenaraiahliview_save_tanggungan_ahli'){
+        $GLOBALS['khai_temp_data']['submitpost'] = array(); 
+        $GLOBALS['khai_temp_data']['submitpost']['error'] = array() ; 
+
+        $tanggungan = get_user_meta( $_POST['ID'], 'tanggungan', true ) ;
+       
+        if($tanggungan){
+            array_push($tanggungan,$_POST);
+            update_user_meta($_POST['ID'], 'tanggungan', $tanggungan) ; 
+        }else{
+            $tanggungan = array() ; 
+            array_push($tanggungan,$_POST);
+            update_user_meta($_POST['ID'], 'tanggungan', $tanggungan) ; 
+        }
+        
+       
+      
+
+     }
+    
+    
     
 
 

@@ -83,9 +83,7 @@
   <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active">Daftar Kariah</li>
   </ol>
-  {submit}
-  <br />
-  {errors.all}
+  
   {#if submit === true}
     {#if errors.all.length > 0}
       {#each errors.all as cat}

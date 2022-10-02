@@ -11,6 +11,7 @@
   let csvdownload;
   let dataTable;
   let senaraiahli = [];
+  let loading = true;
 
   onMount(async () => {
     dataTable = new simpleDatatables.DataTable("#datatablesSimple", {});
@@ -42,15 +43,23 @@
           // dataTable = new simpleDatatables.DataTable("#datatablesSimple", {});
           // dataTable.refresh();
           for (let i = 0; i < JSON.parse(result).submitpost.length; i++) {
-            console.log("dataTable", JSON.parse(result).submitpost[i]);
-            var array = Object.keys(JSON.parse(result).submitpost[i]).map(
+            let loadrows = [] ; 
+            // console.log("dataTable", JSON.parse(result).submitpost[i]);
+            let array = Object.keys(JSON.parse(result).submitpost[i]).map(
               function (key) {
                 return JSON.parse(result).submitpost[i][key];
               }
             );
-            console.log("array", array);
-            array[7] = ` <button
-                    class="btn btn-primary btn-sm editahli"
+           
+            loadrows[0] = `${i+1}` ;
+            loadrows[1] = `${array[1]}` ;
+            loadrows[2] = `${array[2]}` ;
+            loadrows[3] = `${array[3]}` ;
+            loadrows[4] = `${array[4]}` ;
+            loadrows[5] = `<a href="https://wa.me/${array[5]}"">${array[5]}</a>` ;
+            loadrows[6] = (array[6] == '1') ? 'Aktif' : '' ;
+            loadrows[7] = ` <button
+                    class="btn btn-primary btn-sm editahli" data-pass="${btoa(JSON.stringify(array))}"
                     ><i class="fa fa-pencil"></i></button
                   >
                   <button
@@ -58,12 +67,14 @@
                     class="btn btn-danger btn-sm deleteahli"
                     ><i class="fa fa-trash"></i></button
                   >`;
-            array[8] = `<button
+            loadrows[8] = `<button
                     class="btn btn-warning btn-sm"
                     disabled><i class="fa fa-exclamation-triangle" /></button
                   >`;
-            dataTable.rows().add(array);
+
+            dataTable.rows().add(loadrows);
           }
+          loading = false;
 
           // dataTable = new simpleDatatables.DataTable("#datatablesSimple", {});
           // dataTable.refresh();
@@ -75,21 +86,23 @@
     senaraiahli = JSON.parse(await apidata).submitpost;
 
     var element = document.querySelectorAll(".editahli");
-    console.log("element", element);
     for (let i = 0; i < element.length; i++) {
       element[i].addEventListener("click", function () {
-        alert("editahli");
+
+      let dataid = element[i].getAttribute('data-pass') ;
+      // console.log('dataid',element[i])
+          dispatch("tabChange", ["EditSenaraiahliview",dataid] );
       });
     }
-    var element = document.querySelectorAll(".deleteahli");
-    console.log("element", element);
-    for (let i = 0; i < element.length; i++) {
-      element[i].addEventListener("click", function () {
+
+    var element2 = document.querySelectorAll(".deleteahli");
+    for (let i = 0; i < element2.length; i++) {
+      element2[i].addEventListener("click", function () {
         alert("deleteahli");
       });
     }
 
-    console.log("senaraiahli", senaraiahli);
+    // console.log("senaraiahli", senaraiahli);
   });
 
   onDestroy(() => {});
@@ -148,7 +161,9 @@
       <button on:click={() => csvdownload()} class="btn btn-primary m-1"
         ><i class="fa fa-download" /></button
       >
-
+      {#if loading === true}
+      <div class="d-flex justify-content-center"> <img class="" src="/assets/img/loading.gif" alt=""></div>
+      {/if}
       <table id="datatablesSimple">
         <thead>
           <tr>
@@ -163,6 +178,7 @@
             <th>Tunggakan</th>
           </tr>
         </thead>
+        
         <!-- <tbody>
           {#if senaraiahli}
             {#each senaraiahli as key, i}
